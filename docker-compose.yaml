@@ -1,0 +1,8 @@
+version: '3'
+
+services: 
+
+  server:
+    image: file_sharing
+    ports: 
+      - "5173:5173"
