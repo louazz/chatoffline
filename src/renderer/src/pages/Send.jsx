@@ -11,6 +11,8 @@ export default function Send() {
     const [files, setFiles] = useState([])
     const [checker, setChecker] = useState(true)
     const [browse, setBrowse] = useState(false)
+    const [key, setKey]= useState(Math.random())
+
 
     useEffect(() => {
         if (localStorage.getItem("user") == undefined || localStorage.getItem("user") == null) {
@@ -26,6 +28,7 @@ export default function Send() {
         window.electronAPI.onFileEvent((event,data) => {
             toast.success(`File received`)
             setFiles(data)
+            setKey(Math.random())
             setChecker(true)
 
         })
@@ -73,7 +76,7 @@ export default function Send() {
 
                         <div className="container second-color">
                             <br/>
-                            <div className="scroll2">
+                            <div className="scroll2" key= {key}>
                                 <div className="box">
                                     <div className="one">
                                     <h4>Browse file</h4>
