@@ -39,7 +39,7 @@ export default function Login(){
         <div className="container">
             <center>
                 <br/>
-            <h2>Welcome to The Offline Sender <PiBirdThin/></h2>
+            <h2>Welcome to The ChatOffline <PiBirdThin/></h2>
             <p>Do you know that you can send files to other devices in the same network without having access to the internet?</p>
             <strong>All you need is a router </strong>
             </center>
