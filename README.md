@@ -42,6 +42,4 @@ npm run build:mac
 
 - After building the app, navigate to the dist folder and you'll find an executable
 
-All rights reserved, Louai Zaiter, 2026
-
 This code is shared under the MIT License
