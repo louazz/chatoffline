@@ -9,28 +9,32 @@ export default function Nav(){
     return(
         <div className="container">
             <br/>
-            <div className="row">
-                <div className="column">
+            <div className="box">
+                <div className="one">
                     <h4 className="float-left">
                     ChatOffline  <PiBirdFill/>
                     </h4>
                 </div>
-                <div className="column">
-                    <div className="box">
+                <div className="one">
+            
+                    <div className="box ">
                     <div className="one">
-                        <a onClick={()=>{navigate("/send")}}> File</a>
+                        <a  onClick={()=>{ if (localStorage.getItem("user")!== null){navigate("/send")}}}> File</a>
                     </div>
                     <div className="one">
-                        <a onClick={()=>{navigate("/chat")}}>Chat</a>
+                        <a onClick={()=>{ if (localStorage.getItem("user")!== null){navigate("/chat")}}}>Chat</a>
                     </div>
                     <div className="one">
-                        <a onClick={()=>{navigate("/ip")}}>Ips</a>
+                        <a onClick={()=>{ if (localStorage.getItem("user")!== null){navigate("/ip")}}}>Ips</a>
                     </div>
                  
                     </div>
                 </div>
-                <div className="column">
-                 {localStorage.getItem("user")==null? <><button className="button button-light float-right" onClick={()=>{navigate("/")}}>SignUp</button>&nbsp;<button className="button button-black button-clear float-right" onClick={()=>{navigate("/login")}}>Login</button></>  :<button className="button button-light float-right" onClick={()=>{localStorage.clear(); navigate("/login")}}>logout</button>}  
+               <div className="one"></div>
+                    <div className="float-right">
+                 {localStorage.getItem("user")==null? <><button className="btn button-dark float-right" onClick={()=>{navigate("/")}}>SignUp</button>&nbsp;<button className="btn btn-dark  float-left" onClick={()=>{navigate("/login")}}>Login</button></>  :<button className="btn btn-dark float-right" onClick={()=>{localStorage.clear(); navigate("/login")}}>logout</button>}  
+
+                 
                 </div>
             </div>
         </div>

@@ -1,6 +1,8 @@
 import "./assets/normalize.css"
-import './assets/milligram.css'
+//import './assets/milligram.css'
+import './assets/bootstrap.min.css'
 import './assets/App_original.css'
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'

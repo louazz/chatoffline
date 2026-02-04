@@ -11,28 +11,28 @@ export default function Send() {
     const [files, setFiles] = useState([])
     const [checker, setChecker] = useState(true)
     const [browse, setBrowse] = useState(false)
-    const [key, setKey]= useState(Math.random())
+    const [key, setKey] = useState(Math.random())
 
 
     useEffect(() => {
         if (localStorage.getItem("user") == undefined || localStorage.getItem("user") == null) {
             navigate("/login")
         }
-        if (checker==true) {
-            const res = window.electron.ipcRenderer.sendSync("browse", {users: [localStorage.getItem("user"), localStorage.getItem("ipUser")]})
+        if (checker == true) {
+            const res = window.electron.ipcRenderer.sendSync("browse", { users: [localStorage.getItem("user"), localStorage.getItem("ipUser")] })
             console.log(res)
 
             setFiles(res)
             setChecker(false)
         }
-        window.electronAPI.onFileEvent((event,data) => {
+        window.electronAPI.onFileEvent((event, data) => {
             toast.success(`File received`)
             setFiles(data)
             setKey(Math.random())
             setChecker(true)
 
         })
-    },[checker])
+    }, [checker])
     const [ip, setIp] = useState(localStorage.getItem("ip"))
 
 
@@ -63,7 +63,8 @@ export default function Send() {
             <div className="container">
                 <Nav />
                 <Toaster position='top-center' />
-
+                <br />
+                <br />
                 <div className="container">
                     <center>
                         <br />
@@ -74,77 +75,80 @@ export default function Send() {
 
                     {browse == true ?
 
-                        <div className="container second-color">
-                            <br/>
-                            <div className="scroll2" key= {key}>
+                        <div className="container ">
+                            <br />
+                            <div >
                                 <div className="box">
                                     <div className="one">
-                                    <h4>Browse file</h4>
+                                        <h4>Browse file</h4>
                                     </div>
                                     <div className="one">
-                                        <button className="button button-black float-right" onClick={()=>{setBrowse(false)}}>Send File</button>
+                                        <button className="btn btn-dark float-right" onClick={() => { setBrowse(false) }}>Send File</button>
                                     </div>
                                 </div>
-                                
+                                <br/>
+                                <div className="scroll2">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">File name</th>
+                                            <th scope="col">Action</th>
 
-                                {files.map(item => {
-                                    return (
-                                        <>
-                                            <br />
-                                            <div className="container first-color">
-                                                <br />
+                                        </tr>
+                                    </thead>
+                                    {files.map(item => {
+                                        return (
+                                            <>
 
-                                                <div className="row ">
-                                                    <div className="column">
-                                                        <p>{item.filename}</p>
-                                                    </div>
-                                                    <div className="column">
-                                                        <button className="button button-light float-right" onClick={() => { download(item.filename) }}>Download</button>
-                                                    </div>
 
-                                                </div>
 
-                                            </div>
-                                        </>
-                                    )
-                                })}
+                                                <tbody>
+                                                    <tr class="table-info">
+                                                        <th scope="row">{item.filename}</th>
+                                                        <td><button className="btn btn-dark float-right" onClick={() => { download(item.filename) }}>Download</button></td>
+
+                                                    </tr>
+                                                </tbody>
+
+
+                                            </>
+                                        )
+                                    })}
+                                </table>
                             </div>
-                        </div>
+                        </div></div>
                         :
-                                  <div className="container second-color">
-                                    <br/>
-                                     <div className="box">
-                                    <div className="one">
-                                    <h4>IP address of the reciever</h4>                                    
-                                    </div>
-                                    <div className="one">
-                                        <button className="button button-black float-right" onClick={()=>{setBrowse(true); setChecker(true)}}>Browse</button>
-                                    </div>
-                                </div>
-                               
-                                <div className="row">
-                                    <div className="column">
-                                        <input placeholder="Ip address e.g. 123.123.22.1" onChange={handleIp} value={localStorage.getItem("ip")} />
+                        <div className="container ">
+                            <br />
 
-                                    </div>
-                                </div>
-                                <br />
-                                <div className="container second-color">
-                                   
-                                    <p> We use port forwarding and sockets to send your file over a secure channel</p>
-                                    <center>
-                                        <input type="file" onChange={submit} />
-                                    </center>
-                                </div>
-                                <br />
-                                <br />
+                            <button className="btn btn-dark float-right" onClick={() => { setBrowse(true); setChecker(true) }}>Browse</button>
+
+                            <br />
+
+                            <label className="form-label mt-4">IP address of the reciever</label>
+                            <input className="form-control" placeholder="Ip address e.g. 123.123.22.1" onChange={handleIp} value={localStorage.getItem("ip")} />
+
+
+
+                            <div className="container">
+
+
+                                <label className="form-label mt-4">Select a file to send</label>
+                                <input className='form-control' type="file" onChange={submit} />
+
                             </div>
-                         
+                            <br />
+                            <br />
+                        </div>
+
                     }
 
 
                 </div>
-                </div>
-            </>
-            )
+            </div>
+            <br />
+            <br />
+            <div className="fifth-color" id='footer' >This app is made by Louai Zaiter in 2025.</div>
+        </>
+    )
 }

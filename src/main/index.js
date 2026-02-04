@@ -95,7 +95,7 @@ app.whenReady().then(() => {
     cors: {
       origin: "*"
     },
-    maxHttpBufferSize: 1e10
+    maxHttpBufferSize: 1e100000
   });
   io.listen(3000)
 
@@ -135,7 +135,7 @@ app.whenReady().then(() => {
 
       db.insertTableContent("files", location, obj, (succ, msg) => {
         console.log(msg)
-        writeFile(location + file.name, file.file, (err) => {
+        writeFile(location +'/' +file.name, file.file, (err) => {
           callback({ message: err ? "failed to upload file" : "success" })
         });
         db.getAll("files", location, (succ, result) => {
@@ -217,7 +217,9 @@ app.whenReady().then(() => {
       var res = []
       for (let i in result) {
         const users = result[i].users
-        if (arg.users.includes(users[0]) || arg.users.includes(users[1])) {
+        console.log(arg.users[0])
+        console.log(arg.users[1])
+        if ((arg.users.includes(users[0]) || arg.users.includes(users[1]) )&& ((arg.users[0]!==null) && (arg.users[1] !== null)) || (arg.users[0]== users[0] || arg.users[0] == users[1] )) {
           res.push(result[i])
         }
       }
@@ -270,8 +272,7 @@ app.whenReady().then(() => {
     })
   })
   ipcMain.on('download', (event, arg) => {
-    var name = arg.filename;
-    fs.readFile(location + name, (error, data) => {
+    fs.readFile(location +'/'+ arg.filename, (error, data) => {
       event.returnValue = { file: data }
       console.log(data)
     })

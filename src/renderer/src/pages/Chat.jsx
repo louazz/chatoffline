@@ -6,276 +6,280 @@ import { GiHummingbird } from "react-icons/gi";
 import { Toaster, toast } from 'alert';
 import { v4 as uuidv4 } from 'uuid';
 
-export default function Chat (){
-    const [checker, setChecker]= useState(true)
-    const [key, setKey]= useState(Math.random())
+export default function Chat() {
+    const [checker, setChecker] = useState(true)
+    const [key, setKey] = useState(Math.random())
     const [msg, setMsg] = useState([])
-    const [input, setInput]= useState("")
-    const [convId, setCoonvId]= useState(null)
-    const [conversation, setConversation] =useState([{}])
+    const [input, setInput] = useState("")
+    const [convId, setCoonvId] = useState(null)
+    const [conversation, setConversation] = useState([{}])
     const [create, setCreate] = useState(false)
-    
-    const navigate = useNavigate()
 
+    const navigate = useNavigate()
     const socket = io(`http://${localStorage.getItem("ip")}:3000`);
-    useEffect(()=>{
+
+    useEffect(() => {
+        //alert(JSON.stringify(conversation))
         if (localStorage.getItem("user") == undefined || localStorage.getItem("user") == null) {
             navigate("/login")
         }
-     
-        if(convId != null){
-        
-            if (checker==true){
-                const res =  window.electron.ipcRenderer.sendSync("getchat",{conversation: convId})           
+
+        if (convId != null) {
+
+            if (checker == true) {
+                const res = window.electron.ipcRenderer.sendSync("getchat", { conversation: convId })
                 setMsg(res)
                 //alert("The conversation id is:"+ convId)
                 setChecker(false)
                 setInput('Type Something ...')
             }
-           
-            window.electronAPI.onBroadCastedEvent((event,data) => {
+
+            window.electronAPI.onBroadCastedEvent((event, data) => {
                 toast.success(`Recieved a message`)
 
-               console.log(data)
+                console.log(data)
                 // alert(JSON.stringify(data))
                 setMsg(data)
                 setKey(Math.random())
                 console.log(msg == data)
             })
-        }else{
-            if(checker){
-                const myip =  window.electron.ipcRenderer.sendSync("myIp")  
+        } else {
+            if (checker) {
+                const myip = window.electron.ipcRenderer.sendSync("myIp")
 
-                //alert(typeof localStorage.getItem("user"))
-  
-                const res =  window.electron.ipcRenderer.sendSync("getConv", { users: [localStorage.getItem("user"), localStorage.getItem("ipUser")], ip:  [localStorage.getItem('ip'),myip]})           
-            setConversation(res)
-            setChecker(false)
+                const res = window.electron.ipcRenderer.sendSync("getConv", { users: [localStorage.getItem("user"), localStorage.getItem("ipUser")], ip: [localStorage.getItem('ip'), myip] })
+                setConversation(res)
+                console.log(res)
+                var tmp = []
+                for (var i in res) {
+                    console.log(res[i].ip)
+                    var new_conv = res[i]
+                    if (res[i].ip[0] == localStorage.getItem('ip')) {
+                        new_conv.ip = res[i].ip[0]
+                    } else {
+                        new_conv.ip = res[i].ip[1]
+                    }
 
-}
-window.electronAPI.onConvEvent((event,data) => {
-    toast.success(`Conversation added`)
-    console.log(data)
+                    tmp.push(new_conv)
+                }
+                setConversation(tmp)
+                setChecker(false)
 
-    setConversation(data)
-    setKey(Math.random())
-})
-}},[convId])
-      
-    const addConv = async()=>{
+            }
+            window.electronAPI.onConvEvent((event, data) => {
+                toast.success(`Conversation added`)
+                console.log(data)
+
+                var tmp = []
+                for (var i in data) {
+                    console.log(data[i].ip)
+                    var new_conv = res[i]
+                    if (data[i].ip[0] == localStorage.getItem('ip')) {
+                        new_conv.ip = data[i].ip[0]
+                    } else {
+                        new_conv.ip = data[i].ip[1]
+                    }
+
+                    tmp.push(new_conv)
+                }
+                setConversation(tmp)
+
+                setKey(Math.random())
+            })
+        }
+    }, [convId])
+
+    const addConv = async () => {
         const id = uuidv4()
-        const myip =  window.electron.ipcRenderer.sendSync("myIp")  
+        const myip = window.electron.ipcRenderer.sendSync("myIp")
 
-        const data = {ip: [localStorage.getItem("ip"), myip], users: [localStorage.getItem("user"), localStorage.getItem("ipUser")], sharedId: id};
-        const conv =  window.electron.ipcRenderer.sendSync("addConv", data)  
-        setConversation(conv)
+        const data = { ip: [localStorage.getItem("ip"), myip], users: [localStorage.getItem("user"), localStorage.getItem("ipUser")], sharedId: id };
+        const conv = window.electron.ipcRenderer.sendSync("addConv", data)
+
+        console.log(conv)
+        var tmp = []
+        for (var i in conv) {
+
+            var new_conv = conv[i]
+            if (conv[i].ip[0] == localStorage.getItem('ip')) {
+                new_conv.ip = conv[i].ip[0]
+            } else {
+                new_conv.ip = conv[i].ip[1]
+            }
+
+            tmp.push(new_conv)
+        }
+        setConversation(tmp)
+
+
         setChecker(true)
 
         await socket.emitWithAck("conversation", data);
         toast.success('Conversation added ...')
     }
-    const onSend= ()=>{
-            const m =  window.electron.ipcRenderer.sendSync("addMsg", {message: input, user: [localStorage.getItem("user"), localStorage.getItem("ipUser")], conversation: convId, date: new Date().toLocaleString()})  
-            setMsg(m)
-            setKey(Math.random())
-            setInput("")
-         socket.emit("message", {message: input, user: [localStorage.getItem("user"), localStorage.getItem("ipUser")], conversation: convId, date: new Date().toLocaleString()});
+    const onSend = () => {
+        const m = window.electron.ipcRenderer.sendSync("addMsg", { message: input, user: [localStorage.getItem("user"), localStorage.getItem("ipUser")], conversation: convId, date: new Date().toLocaleString() })
+        setMsg(m)
+        setKey(Math.random())
+        setInput("")
+        socket.emit("message", { message: input, user: [localStorage.getItem("user"), localStorage.getItem("ipUser")], conversation: convId, date: new Date().toLocaleString() });
     }
-    const onChat =(id)=>{
+    const onChat = (id) => {
         setCoonvId(id)
         setKey(Math.random())
         setChecker(true);
 
     }
-    const handleChange= (e)=>{
+    const handleChange = (e) => {
         setInput(e.target.value)
     }
 
     return (
+        <>
+            <div className="container">
+                <Nav />
+                <Toaster position='top-center' />
+                <br />
+                <br />
+                <div className="container">
 
-        <div className="container">
-        <Nav/>
-        <Toaster position='top-center'/>
+                    {convId == null && create == false ?
+                        <>
+                            <center>
+                                <h2>Start chatting now <GiHummingbird /></h2>
+                                <p>The Sender and the Receiver must be connected to the same network</p>
+                            </center>
+                            <div className="box">
+                                <div className="one">
+                                    <h4>Browse Conversations</h4>
 
-        <div className="container">
-            
-       {convId==null && create==false?
-       <>
-       <center>
-                        <h2>Start chatting now <GiHummingbird/></h2>
-                        <p>The Sender and the Receiver must be connected to the same network</p>
-            </center>
-       <div className="row">
-        <div className="column">
-        <h4>Browse Conversations</h4>
-
-        </div>
-        <div className="column">
-        <button className="button button-black float-right" onClick={()=>{setCreate(true); setChecker(true)}}>Create Conversation</button>
-
-        </div>
-       </div>
-      
+                                </div>
+                               
+                            </div>
 
 
-     <br/>
-     <div className="container second-color">
-     <div className="scroll" key= {key}>
-             {
-             conversation.length == 0?
-             <>
-        
-             
-             <div className="container second-color">
-                <p>There are no conversations stored in the database ...</p>
-                </div></>
-                :
-                <>
-                 
-                {
-             conversation.map(item=>{return (
-       
-                <>
-                <br/>
-                <div className="container first-color">
-                <br/>
-   <div className="row">
-       <div className="column">
-           {item.sharedId}
-       </div>
-       <div className="column">
-           {item.ip}
-       </div>
-       <div className="column">
-       {item.ip?.includes(localStorage.getItem("ip")) && item.id !== undefined? <button className="button button-light float-right"  onClick={()=>{onChat(item.sharedId)}}>
-           Chat
-       </button> : <button className="button button-light float-right"  onClick={()=>{onChat(item.id)}} disabled>
-           Chat
-       </button> }
-       </div>
-       
-   </div></div>
-   
-   </>
-               
-          
-        )})}</>}
-          </div> </div>
-     </>
-       : convId==null && create ==true?
-<>
-<center>
-                        <h2>Start chatting now <GiHummingbird/></h2>
-                        <p>The Sender and the Receiver must be connected to the same network</p>
-            </center>
-<div className="container second-color">
-    <br/>
-    <div className="box">
-        <div className="one">
-        <h4>Create a conversation</h4>
-        </div>
-        <div className="one">
- <button className="button button-light float-right" onClick={()=>{setCreate(false)}}>Browse Conversations</button>
-        </div>
-    </div>
+                            <div className="container ">
+                                <div>
+                                    
+                                <div className="container">
+                                  
 
-<br/>
-<div className="row">
-    <div className="column column-75">
-      <input placeholder="Enter IP address of the other device" defaultValue={localStorage.getItem("ip")} />
-    </div>
-    <div className="column">
-<button className="button button-black float-right" onClick={addConv} >Create</button>
-    </div>
-</div>
-<div className="scroll2" key= {key}>
-    {conversation.map(item =>{return(
-            <>
-            <br/>
-            <div className="container first-color">
-            <br/>
-<div className="row">
-   <div className="column">
-       {item.sharedId}
-   </div>
-   <div className="column">
-       {item.ip}
-   </div>
-   <div className="column">
-    {item.ip?.includes(localStorage.getItem("ip"))? <button className="button button-light float-right"  onClick={()=>{onChat(item.sharedId)}}>
-           Chat
-       </button> : <button className="button button-light float-right"  onClick={()=>{onChat(item.sharedId)}} disabled>
-           Chat
-       </button> }
-      
-   </div>
-   
-</div></div>
+                                    <div className="box">
+                                        <div className="one">
+                                            <input className='form-control' placeholder="Enter IP address of the other device" defaultValue={localStorage.getItem("ip")} />
+                                        </div>
+                                        <div className="one">
+                                            <button className="btn btn-info float-right" onClick={addConv} >Create</button>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <div className="scroll">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Identity</th>
+                                                    <th scope="col">Ip</th>
+                                                    <th scope="col">Action</th>
+                                                </tr>
+                                            </thead>
+                                            {conversation.map(item => {
+                                                return (
 
-</>
+                                                    <tbody>
+                                                        <tr class="table-info">
+                                                            <th scope="row">{item.sharedId}</th>
+                                                            <th scope="row">{item.ip}</th>
+                                                            <td>  {item.ip?.includes(localStorage.getItem("ip")) ? <button className="btn btn-danger float-right" onClick={() => { onChat(item.sharedId) }}>
+                                                                Chat
+                                                            </button> : <button className="btn btn-dark float-right" onClick={() => { onChat(item.sharedId) }} disabled>
+                                                                Chat
+                                                            </button>}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                )
+                                            })}
 
-)})}
-</div>
-</div>
-</>
-       :
-       <>
-       <br/>
-       <div className="row">
-        <div className="column">
-        <button className="button button-black" onClick={()=>{setCoonvId(null)}}>Exit Conversation</button>
-        </div>
-       </div>
-        <div className="container second-color">
-            <br/>
-            <div className="scroll" key ={key}>
-                <div>
-                    <div>
-                       
-                    <div className="container">
 
-                      
-                    {msg.map((item, i) =>{return(
-                  item.user[0] == localStorage.getItem("user")?
-                  <> 
-                   <div className="row">
-                  <div className="column column-50 first-color" key={i}>
-                 
-                    <p  className="float-left">{item.message} <br/>
-                    <small className="float-left">{item.date}</small></p>
-                    </div></div>
-                    <br/>
-                  </>
-                :
-                <>
-                 <div className="row">
-                <div className="column column-50  third-color column-offset-50"key={i}>
-                 
-                    <p  className="float-left">{item.message} <br/>
-                    <small className="float-left">{item.date}</small></p>
-                    
-                    </div></div>
-                    <br/>
-                    </>
-                
-            )})} 
-                    </div>
-                    </div>
+
+
+                                        </table>
+                                    </div>
+                                </div>
+                          
+                                </div> </div>
+                        </>
+                        : convId !== null ?
+                          
+                            <>
+
+                                <div className="row">
+                                    <div className="column">
+                                        <button className="btn btn-dark" onClick={() => { setCoonvId(null) }}>Exit Conversation</button>
+                                    </div>
+                                </div>
+                                <div className="container ">
+                                    <br />
+                                    <div >
+                                        <div>
+                                            <div>
+
+                                                <div className="container scroll">
+
+
+                                                    {msg.map((item, i) => {
+                                                        return (
+                                                            item.user[0] == localStorage.getItem("user") ?
+                                                                <>
+                                                                    <div className="row">
+                                                                        <div className="column column-50 fourth-color" key={i}>
+
+                                                                            <p className="float-left">{item.message} <br />
+                                                                                <small className="float-left">{item.date}</small></p>
+                                                                        </div></div>
+                                                                    <br />
+                                                                </>
+                                                                :
+                                                                <>
+                                                                    <div className="row">
+                                                                        <div className="column column-50  third-color column-offset-50" key={i}>
+
+                                                                            <p className="float-left">{item.message} <br />
+                                                                                <small className="float-left">{item.date}</small></p>
+
+                                                                        </div></div>
+                                                                    <br />
+                                                                </>
+
+                                                        )
+                                                    })}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <br />    <br />
+                                    <center id='footer'>
+                                        <div className="box">
+                                            <div className="one">
+                                                <textarea className="form-control" placeholder="type something" defaultValue={input} onChange={handleChange} />
+                                            </div>
+                                            <div className="one">
+                                                <button className="btn btn-info float-left" onClick={onSend} >Send</button>
+                                            </div>
+
+                                        </div>
+
+                                        <br />
+                                    </center>
+                                </div>
+
+                            </>: <></>
+                    }
                 </div>
             </div>
-           <br/>
-            <div className="row">
-                <div className="column column-80">
-<input placeholder="type something" defaultValue={input} onChange={handleChange} />
-                </div>
-                <div className="column">
-<button className="button button-black float-left" onClick={onSend} >Send</button>
-                </div>
-            </div>
-        </div>
-      </>
-    }
-    </div>
-    </div>
+
+        </>
     )
+
+
 }

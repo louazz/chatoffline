@@ -32,32 +32,41 @@ export default function Login(){
             setPassword(e.target.value)
         }
     return(
+        <>
         <div className="container">
         <Nav />
         <Toaster position='top-center'/>
-
+        <br/>
+      
         <div className="container">
             <center>
                 <br/>
-            <h2>Welcome to The ChatOffline <PiBirdThin/></h2>
+            <h2>Welcome to ChatOffline <PiBirdThin/></h2>
             <p>Do you know that you can send files to other devices in the same network without having access to the internet?</p>
             <strong>All you need is a router </strong>
             </center>
             <br/>
-        <div className="container second-color">
+         
+        <div className="container second-color ">
+            <br/>
             <h4>Login Now!</h4>
             <div className="row">
                 <div className="column">
-                    <label>Your Username</label>
-                    <input placeholder="Username" onChange={handleUsername} />
+                    <label className="form-label mt-4">Your Username</label>
+                    <input className="form-control" placeholder="Username" onChange={handleUsername} />
 
-                    <label>Your password</label>
-                    <input placeholder="Password" type="password" onChange={handlePassword} />
+                    <label  className="form-label mt-4">Your password</label>
+                    <input className='form-control' placeholder="Password" type="password" onChange={handlePassword} />
                 </div>
             </div>
-            <button className="button button-light" onClick={submit}>Login</button>
+            <br/>
+         
+            <button className="btn btn-dark" onClick={submit}>Login</button>
+            <br/><br/>
         </div>
         </div>
+   
         </div>
+             <div className="fifth-color" id='footer' >This app is made by Louai Zaiter in 2025.</div></>
     )
 }
