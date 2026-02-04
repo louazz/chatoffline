@@ -1,4 +1,6 @@
-# Chatoffline
+### Chatoffline
+![alt text](images/logo.png)
+
 A desktop application for offline file-sharing and messaging built using Electron JS
 1. The login screen
 ![alt text](images/signup.png)
