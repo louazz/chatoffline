@@ -2,9 +2,9 @@
 ![alt text](images/logo.png)
 
 1. The login screen
-![alt text](images/signup.png)
-2. The signup screen
 ![alt text](images/login.png)
+2. The signup screen
+![alt text](images/signup.png)
 3. Browse ip screen
 ![alt text](images/ip.png)
 4. Chat screen
